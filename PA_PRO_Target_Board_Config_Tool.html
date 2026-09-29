@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d1117">
-<title>PA PRO Node Config</title>
+<title>PA PRO Target Board Config</title>
 <style>
   :root {
     --background: #0d1117;
@@ -138,8 +138,8 @@
 </head>
 <body>
 
-<h1>PA PRO Node Config</h1>
-<div class="subtitle">Scan the master QR code, pick the node zone, connect the node over USB, configure.</div>
+<h1>PA PRO Target Board Config</h1>
+<div class="subtitle">Scan the master QR code (MAC + channel), pick the zone, connect the board over USB, configure.</div>
 
 <!-- ======================= STEP 1: MASTER MAC ADDRESS ======================= -->
 <div class="card">
@@ -175,8 +175,9 @@
 <!-- ======================= STEP 3: LINK SETTINGS ======================= -->
 <div class="card">
   <h2><span class="step-number">3</span>Link settings</h2>
-  <label for="channelSelect">ESP-NOW channel (must match the master)</label>
+  <label for="channelSelect">ESP-NOW channel (filled from the QR code; must match the master)</label>
   <select id="channelSelect"></select>
+  <div id="channelSource" class="status-line">Scan the QR code to fill the channel.</div>
 
   <label for="surfaceSelect">Mount type</label>
   <select id="surfaceSelect">
@@ -296,6 +297,19 @@ function ExtractMacAddress(text)
     return null;
 }
 
+/* Find "CH=<number>" in the QR text (format: "MAC=AA:BB:CC:DD:EE:FF;CH=6").
+ * Returns the channel, or null if the QR has no valid channel. */
+function ExtractChannel(text)
+{
+    const match = text.match(/CH\s*[=:]\s*(\d{1,2})/i);
+
+    if (!match) { return null; }
+
+    const channel = parseInt(match[1], 10);
+
+    return ((channel >= CHANNEL_MIN) && (channel <= CHANNEL_MAX)) ? channel : null;
+}
+
 function UpdateButtons()
 {
     const isConnected = (nodeTransport !== null);
@@ -323,6 +337,17 @@ function SetMasterMacAddress(macAddress, source)
 
     Log("Master MAC address " + macAddress + " (" + source + ")");
     UpdateButtons();
+}
+
+function SetChannel(channel, source)
+{
+    const channelSelect = element("channelSelect");
+
+    channelSelect.value = String(channel);
+    StorageSet(localStorage, "channel", channelSelect.value);
+
+    element("channelSource").textContent = "Channel " + channel + " (from " + source + ")";
+    Log("Channel " + channel + " (" + source + ")");
 }
 
 /* jsQR is loaded only if the browser has no built-in BarcodeDetector. */
@@ -426,6 +451,19 @@ async function StartQrScan()
                 if (navigator.vibrate) { navigator.vibrate(100); }
                 StopQrScan();
                 SetMasterMacAddress(macAddress, "QR code");
+
+                /* The master also puts its channel in the QR code. Use it, so the
+                 * node always gets the same channel as the master. */
+                const channel = ExtractChannel(qrText);
+
+                if (channel !== null)
+                {
+                    SetChannel(channel, "QR code");
+                }
+                else
+                {
+                    Log("QR code has no channel - keep the channel below correct by hand", "error");
+                }
                 return;
             }
 
@@ -842,7 +880,11 @@ function Setup()
     }
 
     channelSelect.value = StorageGet(localStorage, "channel") || "1";
-    channelSelect.addEventListener("change", () => StorageSet(localStorage, "channel", channelSelect.value));
+    channelSelect.addEventListener("change", () =>
+    {
+        StorageSet(localStorage, "channel", channelSelect.value);
+        element("channelSource").textContent = "Channel " + channelSelect.value + " (set by hand)";
+    });
 
     const surfaceSelect = element("surfaceSelect");
     surfaceSelect.value = StorageGet(localStorage, "surface") || "board";
