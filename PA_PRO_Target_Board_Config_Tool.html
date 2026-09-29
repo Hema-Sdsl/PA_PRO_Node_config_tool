@@ -3,214 +3,582 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#021F48">
 <title>PA PRO Target Board Config</title>
 <style>
+  /* ------------------------------------------------------------------
+   * Colours follow the Pace Attack Pro machine UI:
+   * navy #021F48 and green #01D49A.
+   * ------------------------------------------------------------------ */
   :root {
-    --background: #0d1117;
-    --panel: #161b22;
-    --panel-border: #30363d;
-    --text: #e6edf3;
-    --text-muted: #8b949e;
-    --accent: #2f81f7;
-    --success: #3fb950;
-    --danger: #f85149;
-    --warning: #d29922;
-    --selected: #1f6feb;
+    --navy-900: #010F24;
+    --navy-800: #021F48;
+    --navy-700: #0A2C5E;
+    --navy-600: #143A73;
+    --line: rgba(255, 255, 255, 0.08);
+    --line-strong: rgba(255, 255, 255, 0.16);
+    --text: #F2F6FC;
+    --text-muted: #8FA3C0;
+    --text-faint: #5F7697;
+    --green: #01D49A;
+    --green-soft: rgba(1, 212, 154, 0.12);
+    --amber: #F5B83D;
+    --amber-soft: rgba(245, 184, 61, 0.12);
+    --red: #FF5C6C;
+    --red-soft: rgba(255, 92, 108, 0.12);
+    --radius-large: 18px;
+    --radius-medium: 12px;
+    --radius-small: 8px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   }
-  * { box-sizing: border-box; }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body { margin: 0; overflow-x: hidden; }
+
   body {
-    margin: 0;
-    padding: 16px;
-    background: var(--background);
+    min-height: 100vh;
+    background:
+      radial-gradient(1200px 500px at 50% -200px, #0E3B7A 0%, transparent 70%),
+      var(--navy-900);
     color: var(--text);
-    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-    font-size: 16px;
-    line-height: 1.4;
-  }
-  h1 { font-size: 20px; margin: 0 0 4px; }
-  .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; }
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 14px;
-  }
-  .card h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     font-size: 15px;
-    margin: 0 0 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    line-height: 1.45;
+    padding-bottom: 120px;
   }
-  .step-number {
+
+  .page { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------------- Header ---------------- */
+  header { display: flex; align-items: center; gap: 12px; padding: 20px 0 14px; }
+  .brand-mark {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, var(--green) 0%, #00A3C4 100%);
+    display: grid;
+    place-items: center;
+    color: var(--navy-800);
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 6px 18px rgba(1, 212, 154, 0.3);
+    flex-shrink: 0;
+  }
+  .brand-text h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.2px; }
+  .brand-text p { margin: 2px 0 0; font-size: 12.5px; color: var(--text-muted); }
+
+  /* ---------------- Progress stepper ---------------- */
+  .stepper { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 4px 0 18px; }
+  .stepper .step {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .stepper .bar { height: 4px; border-radius: 4px; background: var(--line-strong); transition: background 0.3s; }
+  .stepper .step.done { color: var(--green); }
+  .stepper .step.done .bar { background: var(--green); }
+
+  /* ---------------- Cards ---------------- */
+  .card {
+    background: linear-gradient(180deg, rgba(20, 58, 115, 0.55) 0%, rgba(2, 31, 72, 0.75) 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-large);
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .card-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; }
+  .step-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 12.5px;
+    font-weight: 800;
+    background: var(--navy-600);
+    color: var(--text-muted);
+    border: 1px solid var(--line-strong);
+    transition: all 0.25s;
+  }
+  .card.done .step-badge { background: var(--green); color: var(--navy-800); border-color: var(--green); }
+
+  .chip {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--navy-600);
+    color: var(--text-muted);
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .chip.ok { background: var(--green-soft); color: var(--green); border-color: rgba(1, 212, 154, 0.35); }
+  .chip.warn { background: var(--amber-soft); color: var(--amber); border-color: rgba(245, 184, 61, 0.35); }
+  .chip.error { background: var(--red-soft); color: var(--red); border-color: rgba(255, 92, 108, 0.35); }
+
+  /* ---------------- Buttons ---------------- */
+  button { font: inherit; color: inherit; cursor: pointer; border: none; background: none; }
+  button:disabled { cursor: not-allowed; opacity: 0.4; }
+
+  .button {
+    width: 100%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    padding: 14px 16px;
+    border-radius: var(--radius-medium);
+    font-weight: 700;
+    font-size: 15px;
+    transition: transform 0.08s, background 0.2s, opacity 0.2s;
+  }
+  .button:active:not(:disabled) { transform: scale(0.98); }
+  .button svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .button-primary { background: var(--green); color: var(--navy-800); }
+  .button-primary:hover:not(:disabled) { background: #19E3AA; }
+  .button-secondary { background: var(--navy-600); border: 1px solid var(--line-strong); color: var(--text); }
+  .button-ghost { background: transparent; border: 1px solid var(--line-strong); color: var(--text-muted); }
+
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; min-width: 0; }
+
+  /* ---------------- MAC display ---------------- */
+  .mac-display {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: var(--radius-medium);
+    background: rgba(1, 15, 36, 0.6);
+    border: 1px dashed var(--line-strong);
+    text-align: center;
+  }
+  .mac-display .label { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
+  .mac-display .value { font-family: var(--mono); font-size: 20px; letter-spacing: 1px; margin-top: 4px; color: var(--text-muted); }
+  .mac-display.ok { border-style: solid; border-color: rgba(1, 212, 154, 0.45); background: var(--green-soft); }
+  .mac-display.ok .value { color: var(--green); }
+
+  details.manual-entry { margin-top: 10px; }
+  details.manual-entry summary { cursor: pointer; font-size: 13px; color: var(--text-muted); list-style: none; padding: 4px 0; }
+  details.manual-entry summary::-webkit-details-marker { display: none; }
+  details.manual-entry summary::before { content: "+ "; color: var(--green); font-weight: 700; }
+  details.manual-entry[open] summary::before { content: "\2212  "; }
+
+  input[type="text"] {
+    font: inherit;
+    font-family: var(--mono);
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--line-strong);
+    background: rgba(1, 15, 36, 0.7);
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  input[type="text"]:focus { outline: 2px solid var(--green); outline-offset: 1px; border-color: transparent; }
+
+  /* ---------------- Zone tiles ---------------- */
+  .zone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .zone-tile {
+    position: relative;
+    padding: 16px 12px 14px;
+    border-radius: var(--radius-medium);
+    background: rgba(1, 15, 36, 0.55);
+    border: 1.5px solid var(--line-strong);
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s, transform 0.08s;
+  }
+  .zone-tile:active { transform: scale(0.98); }
+  .zone-tile .zone-symbol { font-size: 26px; font-weight: 800; line-height: 1; color: var(--text); }
+  .zone-tile .zone-name { display: block; margin-top: 8px; font-weight: 700; font-size: 14.5px; }
+  .zone-tile .zone-byte { display: block; margin-top: 2px; font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); }
+  .zone-tile .tick {
+    position: absolute;
+    top: 10px;
+    right: 10px;
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-  }
-  button {
-    font: inherit;
-    border: 1px solid var(--panel-border);
-    background: #21262d;
-    color: var(--text);
-    border-radius: 10px;
-    padding: 12px 14px;
-    cursor: pointer;
-    width: 100%;
-  }
-  button:disabled { opacity: 0.45; cursor: not-allowed; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
-  button.success { background: var(--success); border-color: var(--success); color: #fff; font-weight: 600; }
-  .row { display: flex; gap: 8px; margin-top: 8px; }
-  .row > * { flex: 1; }
-  input, select {
-    font: inherit;
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--panel-border);
-    background: var(--background);
-    color: var(--text);
-  }
-  label { display: block; font-size: 13px; color: var(--text-muted); margin: 10px 0 4px; }
-  .value-box {
-    font-family: ui-monospace, Menlo, Consolas, monospace;
-    font-size: 18px;
-    padding: 10px;
-    border-radius: 8px;
-    background: var(--background);
-    border: 1px dashed var(--panel-border);
-    text-align: center;
-    margin-top: 8px;
-  }
-  .value-box.ok { border-style: solid; border-color: var(--success); color: var(--success); }
-  .zone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .zone-grid button { padding: 16px 8px; font-weight: 600; }
-  .zone-grid button .zone-byte { display: block; font-size: 12px; font-weight: 400; color: var(--text-muted); margin-top: 2px; }
-  .zone-grid button.selected { background: var(--selected); border-color: var(--selected); color: #fff; }
-  .zone-grid button.selected .zone-byte { color: #cfe3ff; }
-  #cameraBox { display: none; margin-top: 10px; position: relative; }
-  #cameraBox video { width: 100%; border-radius: 10px; background: #000; }
-  #cameraBox .scan-frame {
-    position: absolute;
-    inset: 15%;
-    border: 3px solid var(--success);
-    border-radius: 12px;
-    pointer-events: none;
-  }
-  .status-line { font-size: 14px; margin-top: 8px; color: var(--text-muted); }
-  .status-line.ok { color: var(--success); }
-  .status-line.error { color: var(--danger); }
-  .status-line.warning { color: var(--warning); }
-  .node-status {
+    border: 1.5px solid var(--line-strong);
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 4px 12px;
-    font-size: 14px;
-    margin-top: 10px;
+    place-items: center;
   }
-  .node-status span:nth-child(odd) { color: var(--text-muted); }
-  .node-status span:nth-child(even) { font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .zone-tile .tick svg { width: 13px; height: 13px; opacity: 0; }
+  .zone-tile.selected { border-color: var(--green); background: var(--green-soft); }
+  .zone-tile.selected .tick { background: var(--green); border-color: var(--green); }
+  .zone-tile.selected .tick svg { opacity: 1; }
+  .zone-tile.selected .zone-symbol { color: var(--green); }
+
+  /* ---------------- Channel chips & segmented control ---------------- */
+  .field-label {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+    margin: 4px 0 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .field-label .hint { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--text-muted); font-size: 12px; }
+  .field-label .hint.ok { color: var(--green); }
+
+  .channel-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 16px; }
+  .channel-chip {
+    padding: 10px 0;
+    border-radius: var(--radius-small);
+    background: rgba(1, 15, 36, 0.55);
+    border: 1px solid var(--line-strong);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .channel-chip.selected { background: var(--green); border-color: var(--green); color: var(--navy-800); }
+
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: rgba(1, 15, 36, 0.6);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-medium);
+    padding: 4px;
+    gap: 4px;
+  }
+  .segmented button { padding: 11px 8px; border-radius: 9px; font-weight: 700; font-size: 13.5px; color: var(--text-muted); transition: all 0.15s; }
+  .segmented button small { display: block; font-weight: 500; font-size: 11px; color: var(--text-faint); margin-top: 1px; }
+  .segmented button.selected { background: var(--navy-600); color: var(--text); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+  .segmented button.selected small { color: var(--green); }
+
+  /* ---------------- Connection ---------------- */
+  .connection-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-medium);
+    background: rgba(1, 15, 36, 0.55);
+    border: 1px solid var(--line);
+    margin-bottom: 12px;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex-shrink: 0;
+    box-shadow: 0 0 0 4px rgba(95, 118, 151, 0.2);
+  }
+  .status-dot.ok { background: var(--green); box-shadow: 0 0 0 4px rgba(1, 212, 154, 0.2); }
+  .status-dot.warn { background: var(--amber); box-shadow: 0 0 0 4px rgba(245, 184, 61, 0.2); }
+  .status-dot.error { background: var(--red); box-shadow: 0 0 0 4px rgba(255, 92, 108, 0.2); }
+  .connection-banner .text { font-size: 13.5px; color: var(--text-muted); }
+  .connection-banner .text strong { display: block; color: var(--text); font-size: 14px; }
+
+  .node-status { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 0; }
+  .node-status .item { padding: 10px 12px; border-radius: var(--radius-small); background: rgba(1, 15, 36, 0.55); border: 1px solid var(--line); }
+  .node-status .item.wide { grid-column: span 2; }
+  .node-status .item .name { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
+  .node-status .item .value { font-family: var(--mono); font-size: 13.5px; margin-top: 3px; word-break: break-all; }
+  .node-status-title { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-top: 14px; }
+
+  /* ---------------- Result banner ---------------- */
+  .result-banner { display: none; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius-medium); margin-top: 12px; font-size: 14px; }
+  .result-banner svg { width: 26px; height: 26px; flex-shrink: 0; }
+  .result-banner.ok { display: flex; background: var(--green-soft); border: 1px solid rgba(1, 212, 154, 0.4); color: var(--green); }
+  .result-banner.error { display: flex; background: var(--red-soft); border: 1px solid rgba(255, 92, 108, 0.4); color: var(--red); }
+  .result-banner strong { display: block; color: var(--text); }
+
+  /* ---------------- Log ---------------- */
+  details.log-card summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  details.log-card summary::-webkit-details-marker { display: none; }
   #logBox {
-    font-family: ui-monospace, Menlo, Consolas, monospace;
-    font-size: 12px;
-    background: var(--background);
-    border: 1px solid var(--panel-border);
-    border-radius: 8px;
-    padding: 8px;
-    height: 180px;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    background: rgba(1, 15, 36, 0.8);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-small);
+    padding: 10px;
+    height: 200px;
     overflow-y: auto;
     white-space: pre-wrap;
     word-break: break-all;
+    color: var(--text-muted);
   }
-  .log-sent { color: #79c0ff; }
-  .log-received { color: #7ee787; }
-  .log-error { color: var(--danger); }
+  .log-sent { color: #7CB7FF; }
+  .log-received { color: var(--green); }
+  .log-error { color: var(--red); }
+
+  /* ---------------- Sticky action bar ---------------- */
+  .action-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: rgba(1, 15, 36, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line-strong);
+    z-index: 20;
+  }
+  .action-bar .inner { max-width: 560px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+  .action-bar .summary { flex: 1; min-width: 0; }
+  .action-bar .summary .main { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .action-bar .summary .sub { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .action-bar .button { width: auto; padding: 14px 22px; }
+
+  /* ---------------- Scanner overlay ---------------- */
+  .scanner { position: fixed; inset: 0; background: #000; z-index: 50; display: none; flex-direction: column; }
+  .scanner.open { display: flex; }
+  .scanner video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .scanner .shade { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0, transparent 36vmin, rgba(0, 0, 0, 0.65) 37vmin); }
+  .scanner .frame { position: absolute; left: 50%; top: 50%; width: 66vmin; height: 66vmin; transform: translate(-50%, -50%); }
+  .scanner .frame .corner { position: absolute; width: 36px; height: 36px; border: 4px solid var(--green); }
+  .scanner .frame .corner.top-left { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 14px 0 0 0; }
+  .scanner .frame .corner.top-right { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 14px 0 0; }
+  .scanner .frame .corner.bottom-left { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 14px; }
+  .scanner .frame .corner.bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 14px 0; }
+  .scanner .frame .scan-line {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    box-shadow: 0 0 12px var(--green);
+    animation: scan 2s ease-in-out infinite;
+  }
+  @keyframes scan { 0% { top: 6%; } 50% { top: 94%; } 100% { top: 6%; } }
+  .scanner .top-text {
+    position: relative;
+    text-align: center;
+    padding: calc(24px + env(safe-area-inset-top)) 24px 0;
+    font-weight: 700;
+    font-size: 16px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+  .scanner .top-text small { display: block; font-weight: 500; font-size: 13px; color: #CFD8E6; margin-top: 4px; }
+  .scanner .bottom { position: relative; margin-top: auto; padding: 0 24px calc(28px + env(safe-area-inset-bottom)); }
+
+  /* ---------------- Toast ---------------- */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 110px;
+    transform: translate(-50%, 20px);
+    background: var(--navy-600);
+    border: 1px solid var(--line-strong);
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: var(--radius-medium);
+    font-size: 13.5px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 60;
+    max-width: calc(100% - 32px);
+    text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.error { border-color: rgba(255, 92, 108, 0.5); color: var(--red); }
+  .toast.ok { border-color: rgba(1, 212, 154, 0.5); color: var(--green); }
+
+  footer { text-align: center; font-size: 11.5px; color: var(--text-faint); margin: 8px 0 0; }
 </style>
 </head>
 <body>
 
-<h1>PA PRO Target Board Config</h1>
-<div class="subtitle">Scan the master QR code (MAC + channel), pick the zone, connect the board over USB, configure.</div>
+<div class="page">
 
-<!-- ======================= STEP 1: MASTER MAC ADDRESS ======================= -->
-<div class="card">
-  <h2><span class="step-number">1</span>Master MAC address</h2>
-  <button id="checkMacButton" class="primary">Check MAC ID</button>
+  <!-- ======================= HEADER ======================= -->
+  <header>
+    <div class="brand-mark">SD</div>
+    <div class="brand-text">
+      <h1>PA PRO Target Board Config</h1>
+      <p>Pace Attack Pro &middot; ESP-NOW target board setup</p>
+    </div>
+  </header>
 
-  <div id="cameraBox">
-    <video id="cameraVideo" playsinline muted></video>
-    <div class="scan-frame"></div>
-    <div class="row"><button id="stopCameraButton">Cancel scan</button></div>
+  <div class="stepper">
+    <div class="step" id="stepperMaster"><div class="bar"></div>Master</div>
+    <div class="step" id="stepperZone"><div class="bar"></div>Zone</div>
+    <div class="step" id="stepperLink"><div class="bar"></div>Link</div>
+    <div class="step" id="stepperBoard"><div class="bar"></div>Board</div>
   </div>
 
-  <div id="masterMacBox" class="value-box">Not scanned</div>
+  <!-- ======================= STEP 1: MASTER ======================= -->
+  <section class="card" id="cardMaster">
+    <div class="card-head">
+      <div class="card-title"><span class="step-badge">1</span>Master machine</div>
+      <span class="chip" id="masterChip">Not scanned</span>
+    </div>
 
-  <label for="manualMacInput">Or type it (AA:BB:CC:DD:EE:FF)</label>
-  <div class="row">
-    <input id="manualMacInput" placeholder="AA:BB:CC:DD:EE:FF" autocapitalize="characters" autocomplete="off">
-    <button id="manualMacButton" style="flex: 0 0 80px;">Use</button>
+    <button id="checkMacButton" class="button button-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/><path d="M13 7h4v2M7 15v2h2"/></svg>
+      Check MAC ID
+    </button>
+
+    <div id="masterMacBox" class="mac-display">
+      <div class="label">Master MAC address</div>
+      <div class="value" id="masterMacValue">--:--:--:--:--:--</div>
+    </div>
+
+    <details class="manual-entry">
+      <summary>Enter MAC address by hand</summary>
+      <div class="row" style="margin-top: 8px;">
+        <input type="text" id="manualMacInput" placeholder="AA:BB:CC:DD:EE:FF" autocapitalize="characters" autocomplete="off" spellcheck="false">
+        <button id="manualMacButton" class="button button-secondary" style="flex: 0 0 84px;">Use</button>
+      </div>
+    </details>
+  </section>
+
+  <!-- ======================= STEP 2: ZONE ======================= -->
+  <section class="card" id="cardZone">
+    <div class="card-head">
+      <div class="card-title"><span class="step-badge">2</span>Board zone</div>
+      <span class="chip" id="zoneChip">Pick one</span>
+    </div>
+
+    <div class="zone-grid">
+      <button class="zone-tile" data-zone-byte="1">
+        <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#021F48" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="zone-symbol">ON</span>
+        <span class="zone-name">On side</span>
+        <span class="zone-byte">byte 0x01</span>
+      </button>
+      <button class="zone-tile" data-zone-byte="2">
+        <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#021F48" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="zone-symbol">OFF</span>
+        <span class="zone-name">Off side</span>
+        <span class="zone-byte">byte 0x02</span>
+      </button>
+      <button class="zone-tile" data-zone-byte="4">
+        <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#021F48" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="zone-symbol">4</span>
+        <span class="zone-name">Four</span>
+        <span class="zone-byte">byte 0x04</span>
+      </button>
+      <button class="zone-tile" data-zone-byte="6">
+        <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#021F48" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="zone-symbol">6</span>
+        <span class="zone-name">Six</span>
+        <span class="zone-byte">byte 0x06</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ======================= STEP 3: LINK ======================= -->
+  <section class="card" id="cardLink">
+    <div class="card-head">
+      <div class="card-title"><span class="step-badge">3</span>Link settings</div>
+      <span class="chip" id="linkChip">Channel 1</span>
+    </div>
+
+    <div class="field-label">ESP-NOW channel <span class="hint" id="channelSource">Filled from the QR code</span></div>
+    <div class="channel-grid" id="channelGrid"></div>
+
+    <div class="field-label">Mount type</div>
+    <div class="segmented" id="surfaceControl">
+      <button data-surface="board">Board<small>Always powered &middot; ring LED</small></button>
+      <button data-surface="net">Net<small>Battery &middot; deep sleep</small></button>
+    </div>
+  </section>
+
+  <!-- ======================= STEP 4: BOARD ======================= -->
+  <section class="card" id="cardBoard">
+    <div class="card-head">
+      <div class="card-title"><span class="step-badge">4</span>Target board</div>
+      <span class="chip" id="boardChip">Offline</span>
+    </div>
+
+    <div class="connection-banner">
+      <span class="status-dot" id="connectionDot"></span>
+      <div class="text" id="connectionText">
+        <strong>Not connected</strong>
+        Plug the board into this phone with a USB OTG cable.
+      </div>
+    </div>
+
+    <div class="row">
+      <button id="connectButton" class="button button-secondary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0V8zM12 18v4"/></svg>
+        Connect board
+      </button>
+      <button id="disconnectButton" class="button button-ghost" style="flex: 0 0 auto; width: auto; padding: 14px 16px;">Disconnect</button>
+    </div>
+
+    <div class="node-status-title" id="nodeStatusTitle" style="display: none;">Saved on the board</div>
+    <div class="node-status" id="nodeStatus"></div>
+
+    <div class="row" style="margin-top: 10px;">
+      <button id="readStatusButton" class="button button-ghost">Refresh board status</button>
+    </div>
+
+    <div class="result-banner" id="resultBanner"></div>
+  </section>
+
+  <!-- ======================= LOG ======================= -->
+  <details class="card log-card">
+    <summary>Technical log <span class="chip">Show</span></summary>
+    <div id="logBox"></div>
+  </details>
+
+  <footer>Straight Drive &middot; Pace Attack Pro</footer>
+</div>
+
+<!-- ======================= STICKY ACTION BAR ======================= -->
+<div class="action-bar">
+  <div class="inner">
+    <div class="summary">
+      <div class="main" id="summaryMain">Scan the master QR code</div>
+      <div class="sub" id="summarySub">Step 1 of 4</div>
+    </div>
+    <button id="configureButton" class="button button-primary">Configure</button>
   </div>
 </div>
 
-<!-- ======================= STEP 2: ZONE ======================= -->
-<div class="card">
-  <h2><span class="step-number">2</span>Node zone</h2>
-  <div class="zone-grid">
-    <button data-zone-byte="1">On side<span class="zone-byte">byte 0x01</span></button>
-    <button data-zone-byte="2">Off side<span class="zone-byte">byte 0x02</span></button>
-    <button data-zone-byte="4">Four<span class="zone-byte">byte 0x04</span></button>
-    <button data-zone-byte="6">Six<span class="zone-byte">byte 0x06</span></button>
+<!-- ======================= QR SCANNER OVERLAY ======================= -->
+<div class="scanner" id="cameraBox">
+  <video id="cameraVideo" playsinline muted></video>
+  <div class="shade"></div>
+  <div class="frame">
+    <span class="corner top-left"></span>
+    <span class="corner top-right"></span>
+    <span class="corner bottom-left"></span>
+    <span class="corner bottom-right"></span>
+    <span class="scan-line"></span>
+  </div>
+  <div class="top-text">
+    Scan the master QR code
+    <small>Point the camera at the QR code on the machine screen</small>
+  </div>
+  <div class="bottom">
+    <button id="stopCameraButton" class="button button-secondary">Cancel</button>
   </div>
 </div>
 
-<!-- ======================= STEP 3: LINK SETTINGS ======================= -->
-<div class="card">
-  <h2><span class="step-number">3</span>Link settings</h2>
-  <label for="channelSelect">ESP-NOW channel (filled from the QR code; must match the master)</label>
-  <select id="channelSelect"></select>
-  <div id="channelSource" class="status-line">Scan the QR code to fill the channel.</div>
-
-  <label for="surfaceSelect">Mount type</label>
-  <select id="surfaceSelect">
-    <option value="board">Board (always powered, ring LED)</option>
-    <option value="net">Net (battery, deep sleep)</option>
-  </select>
-</div>
-
-<!-- ======================= STEP 4: CONNECT AND CONFIGURE ======================= -->
-<div class="card">
-  <h2><span class="step-number">4</span>Node</h2>
-  <div class="row" style="margin-top: 0;">
-    <button id="connectButton" class="primary">Connect node</button>
-    <button id="disconnectButton" disabled>Disconnect</button>
-  </div>
-  <div id="connectionStatus" class="status-line">Not connected. Plug the node into the phone with a USB OTG cable.</div>
-
-  <div id="nodeStatus" class="node-status" style="display: none;"></div>
-
-  <div class="row">
-    <button id="readStatusButton" disabled>Read node status</button>
-  </div>
-  <div class="row">
-    <button id="configureButton" class="success" disabled>Configure node</button>
-  </div>
-  <div id="configureStatus" class="status-line"></div>
-</div>
-
-<!-- ======================= LOG ======================= -->
-<div class="card">
-  <h2>Log</h2>
-  <div id="logBox"></div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
 "use strict";
@@ -219,27 +587,34 @@
  *                               CONSTANTS
  * ========================================================================== */
 
-const ESPRESSIF_USB_VENDOR_ID  = 0x303A;    /* USB vendor ID of every Espressif chip.            */
-const CDC_DATA_INTERFACE_CLASS = 0x0A;      /* USB class of the CDC data interface.              */
-const USB_READ_CHUNK_BYTES     = 64;        /* Bytes asked for in each USB bulk read.            */
-const SERIAL_BAUD_RATE         = 115200;    /* Ignored by USB-Serial/JTAG, required by the API.  */
+const ESPRESSIF_USB_VENDOR_ID    = 0x303A;  /* USB vendor ID of every Espressif chip.            */
+const CDC_DATA_INTERFACE_CLASS   = 0x0A;    /* USB class of the CDC data interface.              */
+const USB_READ_CHUNK_BYTES       = 64;      /* Bytes asked for in each USB bulk read.            */
+const SERIAL_BAUD_RATE           = 115200;  /* Ignored by USB-Serial/JTAG, required by the API.  */
 const REPLY_TIMEOUT_MILLISECONDS = 2000;    /* Longest wait for one "OK ..." / "ERR ..." reply.  */
-const CHANNEL_MIN = 1;                      /* Lowest ESP-NOW channel.                           */
-const CHANNEL_MAX = 13;                     /* Highest ESP-NOW channel.                          */
+const CHANNEL_MIN                = 1;       /* Lowest ESP-NOW channel.                           */
+const CHANNEL_MAX                = 13;      /* Highest ESP-NOW channel.                          */
 
 const ZONE_NAMES = { 1: "On side", 2: "Off side", 4: "Four", 6: "Six" };
+
+const ICON_OK    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>';
+const ICON_ERROR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v6M12 16.5v.5"/></svg>';
 
 /* ==========================================================================
  *                                 STATE
  * ========================================================================== */
 
-let masterMacAddress  = null;   /* "AA:BB:CC:DD:EE:FF" once scanned or typed.  */
-let selectedZoneByte  = null;   /* 1, 2, 4 or 6 once a zone button is pressed. */
-let nodeTransport     = null;   /* The open USB / serial link, or null.        */
-let receiveTextBuffer = "";     /* Bytes from the node not yet ended by '\n'.  */
-let lineWaiters       = [];     /* Promises waiting for a reply line.          */
-let cameraStream      = null;   /* Live camera stream while scanning.          */
-let scanIsRunning     = false;  /* true while the QR scan loop runs.           */
+let masterMacAddress  = null;       /* "AA:BB:CC:DD:EE:FF" once scanned or typed.  */
+let selectedZoneByte  = null;       /* 1, 2, 4 or 6 once a zone tile is pressed.   */
+let selectedChannel   = 1;          /* ESP-NOW channel, 1..13.                     */
+let selectedSurface   = "board";    /* "board" or "net".                           */
+let nodeTransport     = null;       /* The open USB / serial link, or null.        */
+let isConfiguring     = false;      /* true while the configure sequence runs.     */
+let receiveTextBuffer = "";         /* Bytes from the board not yet ended by '\n'. */
+let lineWaiters       = [];         /* Promises waiting for a reply line.          */
+let cameraStream      = null;       /* Live camera stream while scanning.          */
+let scanIsRunning     = false;      /* true while the QR scan loop runs.           */
+let toastTimer        = null;       /* Hides the toast after a few seconds.        */
 
 /* ==========================================================================
  *                             SMALL HELPERS
@@ -251,19 +626,31 @@ function Log(text, kind)
 {
     const logBox = element("logBox");
     const line   = document.createElement("div");
+    const time   = new Date().toLocaleTimeString([], { hour12: false });
 
-    line.textContent = text;
+    line.textContent = time + "  " + text;
     if (kind) { line.className = "log-" + kind; }
 
     logBox.appendChild(line);
     logBox.scrollTop = logBox.scrollHeight;
 }
 
-function SetStatus(id, text, kind)
+function ShowToast(text, kind)
 {
-    const statusElement = element(id);
-    statusElement.textContent = text;
-    statusElement.className   = "status-line" + (kind ? " " + kind : "");
+    const toast = element("toast");
+
+    toast.textContent = text;
+    toast.className   = "toast show" + (kind ? " " + kind : "");
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.className = "toast"; }, 3200);
+}
+
+function SetChip(id, text, kind)
+{
+    const chip = element(id);
+    chip.textContent = text;
+    chip.className   = "chip" + (kind ? " " + kind : "");
 }
 
 /* Browser storage can be blocked (private mode), so every access is guarded. */
@@ -310,14 +697,102 @@ function ExtractChannel(text)
     return ((channel >= CHANNEL_MIN) && (channel <= CHANNEL_MAX)) ? channel : null;
 }
 
-function UpdateButtons()
+/* ==========================================================================
+ *                     SCREEN STATE (stepper, cards, action bar)
+ * ========================================================================== */
+
+function SummaryText()
+{
+    return ZONE_NAMES[selectedZoneByte] + " · CH " + selectedChannel + " · " + (selectedSurface === "board" ? "Board" : "Net");
+}
+
+function RefreshScreen()
 {
     const isConnected = (nodeTransport !== null);
+    const hasMaster   = (masterMacAddress !== null);
+    const hasZone     = (selectedZoneByte !== null);
 
+    /* Stepper bars and card badges. */
+    element("stepperMaster").classList.toggle("done", hasMaster);
+    element("stepperZone").classList.toggle("done", hasZone);
+    element("stepperLink").classList.toggle("done", hasMaster);
+    element("stepperBoard").classList.toggle("done", isConnected);
+
+    element("cardMaster").classList.toggle("done", hasMaster);
+    element("cardZone").classList.toggle("done", hasZone);
+    element("cardLink").classList.toggle("done", hasMaster);
+    element("cardBoard").classList.toggle("done", isConnected);
+
+    /* Buttons. */
     element("connectButton").disabled    = isConnected;
     element("disconnectButton").disabled = !isConnected;
-    element("readStatusButton").disabled = !isConnected;
-    element("configureButton").disabled  = !(isConnected && masterMacAddress && selectedZoneByte);
+    element("readStatusButton").disabled = !isConnected || isConfiguring;
+    element("configureButton").disabled  = !(isConnected && hasMaster && hasZone) || isConfiguring;
+
+    /* Action bar: tell the user the next thing to do. */
+    let summaryMain;
+    let summarySub;
+
+    if (!hasMaster)
+    {
+        summaryMain = "Scan the master QR code";
+        summarySub  = "Step 1 of 4";
+    }
+    else if (!hasZone)
+    {
+        summaryMain = "Pick the board zone";
+        summarySub  = "Step 2 of 4";
+    }
+    else if (!isConnected)
+    {
+        summaryMain = "Connect the target board";
+        summarySub  = SummaryText();
+    }
+    else
+    {
+        summaryMain = SummaryText();
+        summarySub  = "Ready - press Configure";
+    }
+
+    element("summaryMain").textContent     = summaryMain;
+    element("summarySub").textContent      = summarySub;
+    element("configureButton").textContent = isConfiguring ? "Working..." : "Configure";
+}
+
+function SetConnectionState(kind, title, detail)
+{
+    const textBox = element("connectionText");
+
+    element("connectionDot").className = "status-dot" + (kind ? " " + kind : "");
+    textBox.innerHTML = "";
+
+    const titleElement = document.createElement("strong");
+    titleElement.textContent = title;
+    textBox.appendChild(titleElement);
+    textBox.appendChild(document.createTextNode(detail));
+
+    const chipText = { ok: "Connected", warn: "No answer", error: "Error" }[kind] || "Offline";
+    SetChip("boardChip", chipText, kind);
+}
+
+function ShowResult(kind, title, detail)
+{
+    const banner = element("resultBanner");
+
+    banner.className = "result-banner " + kind;
+    banner.innerHTML = (kind === "ok" ? ICON_OK : ICON_ERROR);
+
+    const textBlock    = document.createElement("div");
+    const titleElement = document.createElement("strong");
+    titleElement.textContent = title;
+    textBlock.appendChild(titleElement);
+    textBlock.appendChild(document.createTextNode(detail));
+    banner.appendChild(textBlock);
+}
+
+function HideResult()
+{
+    element("resultBanner").className = "result-banner";
 }
 
 /* ==========================================================================
@@ -328,26 +803,16 @@ function SetMasterMacAddress(macAddress, source)
 {
     masterMacAddress = macAddress;
 
-    const macBox = element("masterMacBox");
-    macBox.textContent = macAddress;
-    macBox.className   = "value-box ok";
+    element("masterMacValue").textContent = macAddress;
+    element("masterMacBox").className     = "mac-display ok";
+    SetChip("masterChip", source === "QR code" ? "Scanned" : "Set", "ok");
 
     /* Temporary store: survives a page reload, cleared when the tab closes. */
     StorageSet(sessionStorage, "masterMacAddress", macAddress);
 
     Log("Master MAC address " + macAddress + " (" + source + ")");
-    UpdateButtons();
-}
-
-function SetChannel(channel, source)
-{
-    const channelSelect = element("channelSelect");
-
-    channelSelect.value = String(channel);
-    StorageSet(localStorage, "channel", channelSelect.value);
-
-    element("channelSource").textContent = "Channel " + channel + " (from " + source + ")";
-    Log("Channel " + channel + " (" + source + ")");
+    HideResult();
+    RefreshScreen();
 }
 
 /* jsQR is loaded only if the browser has no built-in BarcodeDetector. */
@@ -369,7 +834,7 @@ async function StartQrScan()
 {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
     {
-        alert("Camera is not available. Open this page over https in Chrome.");
+        ShowToast("Camera not available. Open this page in Chrome over https.", "error");
         return;
     }
 
@@ -380,7 +845,8 @@ async function StartQrScan()
     }
     catch (error)
     {
-        alert("Camera permission denied or no camera: " + error.message);
+        ShowToast("Camera permission denied or no camera found.", "error");
+        Log("Camera: " + error.message, "error");
         return;
     }
 
@@ -388,7 +854,7 @@ async function StartQrScan()
     video.srcObject = cameraStream;
     await video.play();
 
-    element("cameraBox").style.display = "block";
+    element("cameraBox").classList.add("open");
     scanIsRunning = true;
 
     /* Prefer the fast built-in detector; fall back to jsQR. */
@@ -404,7 +870,7 @@ async function StartQrScan()
         try { await LoadJsQrLibrary(); }
         catch (error)
         {
-            alert(error.message + ". Type the MAC address instead.");
+            ShowToast(error.message + ". Enter the MAC address by hand.", "error");
             StopQrScan();
             return;
         }
@@ -453,16 +919,18 @@ async function StartQrScan()
                 SetMasterMacAddress(macAddress, "QR code");
 
                 /* The master also puts its channel in the QR code. Use it, so the
-                 * node always gets the same channel as the master. */
+                 * board always gets the same channel as the master. */
                 const channel = ExtractChannel(qrText);
 
                 if (channel !== null)
                 {
                     SetChannel(channel, "QR code");
+                    ShowToast("Master found · channel " + channel, "ok");
                 }
                 else
                 {
-                    Log("QR code has no channel - keep the channel below correct by hand", "error");
+                    ShowToast("Master found. QR has no channel - check it below.", "error");
+                    Log("QR code has no channel - set the channel by hand", "error");
                 }
                 return;
             }
@@ -487,7 +955,7 @@ function StopQrScan()
     }
 
     element("cameraVideo").srcObject = null;
-    element("cameraBox").style.display = "none";
+    element("cameraBox").classList.remove("open");
 }
 
 /* ==========================================================================
@@ -496,16 +964,61 @@ function StopQrScan()
 
 function SelectZone(button)
 {
-    document.querySelectorAll(".zone-grid button").forEach((otherButton) => otherButton.classList.remove("selected"));
+    document.querySelectorAll(".zone-tile").forEach((otherButton) => otherButton.classList.remove("selected"));
     button.classList.add("selected");
 
     selectedZoneByte = parseInt(button.dataset.zoneByte, 10);
+    SetChip("zoneChip", ZONE_NAMES[selectedZoneByte], "ok");
+
     Log("Zone " + ZONE_NAMES[selectedZoneByte] + " (byte 0x0" + selectedZoneByte + ")");
-    UpdateButtons();
+    HideResult();
+    RefreshScreen();
 }
 
 /* ==========================================================================
- *                  NODE LINK: WebUSB (Android) or Web Serial (PC)
+ *                          STEP 3: LINK SETTINGS
+ * ========================================================================== */
+
+function SetChannel(channel, source)
+{
+    selectedChannel = channel;
+    StorageSet(localStorage, "channel", String(channel));
+
+    document.querySelectorAll(".channel-chip").forEach((chip) =>
+        chip.classList.toggle("selected", parseInt(chip.dataset.channel, 10) === channel));
+
+    const sourceHint = element("channelSource");
+
+    if (source === "QR code")
+    {
+        sourceHint.textContent = "From QR code";
+        sourceHint.className   = "hint ok";
+    }
+    else if (source === "by hand")
+    {
+        sourceHint.textContent = "Set by hand";
+        sourceHint.className   = "hint";
+    }
+
+    SetChip("linkChip", "Channel " + channel, "ok");
+
+    if (source !== "restored") { Log("Channel " + channel + " (" + source + ")"); }
+    RefreshScreen();
+}
+
+function SetSurface(surface)
+{
+    selectedSurface = surface;
+    StorageSet(localStorage, "surface", surface);
+
+    document.querySelectorAll("#surfaceControl button").forEach((button) =>
+        button.classList.toggle("selected", button.dataset.surface === surface));
+
+    RefreshScreen();
+}
+
+/* ==========================================================================
+ *                  BOARD LINK: WebUSB (Android) or Web Serial (PC)
  * ========================================================================== */
 
 /* WebUSB: talks to the ESP32-C3 USB-Serial/JTAG CDC data interface directly.
@@ -634,8 +1147,8 @@ class SerialTransport
 }
 
 /* ==========================================================================
- *                        LINE PROTOCOL WITH THE NODE
- *   Node provisioning commands end with '\n' and every reply is one line.
+ *                        LINE PROTOCOL WITH THE BOARD
+ *   Provisioning commands end with '\n' and every reply is one line.
  * ========================================================================== */
 
 const textDecoder = new TextDecoder();
@@ -679,7 +1192,7 @@ function WaitForLine(matches, timeoutMilliseconds)
         waiter.timer = setTimeout(() =>
         {
             lineWaiters = lineWaiters.filter((otherWaiter) => otherWaiter !== waiter);
-            reject(new Error("No reply from the node"));
+            reject(new Error("No reply from the board"));
         }, timeoutMilliseconds);
 
         lineWaiters.push(waiter);
@@ -689,7 +1202,7 @@ function WaitForLine(matches, timeoutMilliseconds)
 /* Send one command and wait for its "OK ..." or "ERR ..." reply. */
 async function SendCommand(command, replyStartsWith)
 {
-    if (!nodeTransport) { throw new Error("Node not connected"); }
+    if (!nodeTransport) { throw new Error("Board not connected"); }
 
     const replyPromise = WaitForLine((line) => line.startsWith(replyStartsWith) || line.startsWith("ERR"),
                                      REPLY_TIMEOUT_MILLISECONDS);
@@ -719,31 +1232,39 @@ function ShowNodeStatus(statusLine)
     });
 
     const zoneByte = parseInt(fields.id, 10);
-    const zoneText = ZONE_NAMES[zoneByte] ? ZONE_NAMES[zoneByte] + " (" + fields.id + ")" : (fields.id || "-") + " (not a zone)";
+    const zoneText = ZONE_NAMES[zoneByte] ? ZONE_NAMES[zoneByte] : "Not set (" + (fields.id || "-") + ")";
 
-    const rows = [
-        ["Zone",        zoneText],
-        ["Master MAC",  fields.mac  || "-"],
-        ["Channel",     fields.ch   || "-"],
-        ["Mount type",  fields.surf || "-"],
-        ["Provisioned", fields.prov === "1" ? "yes" : "no"],
-        ["Firmware",    fields.fw   || "-"],
+    const items = [
+        ["Zone",        zoneText,                              false],
+        ["Channel",     fields.ch || "-",                      false],
+        ["Master MAC",  fields.mac || "-",                     true ],
+        ["Mount type",  fields.surf || "-",                    false],
+        ["Configured",  fields.prov === "1" ? "Yes" : "No",    false],
+        ["Firmware",    fields.fw || "-",                      true ],
     ];
 
     const statusBox = element("nodeStatus");
     statusBox.innerHTML = "";
 
-    rows.forEach(([name, value]) =>
+    items.forEach(([name, value, isWide]) =>
     {
-        const nameCell  = document.createElement("span");
-        const valueCell = document.createElement("span");
+        const item      = document.createElement("div");
+        const nameCell  = document.createElement("div");
+        const valueCell = document.createElement("div");
+
+        item.className        = "item" + (isWide ? " wide" : "");
+        nameCell.className    = "name";
+        valueCell.className   = "value";
         nameCell.textContent  = name;
         valueCell.textContent = value;
-        statusBox.appendChild(nameCell);
-        statusBox.appendChild(valueCell);
+
+        item.appendChild(nameCell);
+        item.appendChild(valueCell);
+        statusBox.appendChild(item);
     });
 
     statusBox.style.display = "grid";
+    element("nodeStatusTitle").style.display = "block";
 }
 
 /* ==========================================================================
@@ -761,7 +1282,8 @@ async function ConnectNode()
     else if ("usb" in navigator)                  { transport = new UsbTransport(); }
     else
     {
-        SetStatus("connectionStatus", "This browser cannot talk to USB. Use Chrome on Android, or Chrome / Edge on a PC.", "error");
+        SetConnectionState("error", "USB not supported", "Use Chrome on Android, or Chrome / Edge on a PC.");
+        ShowToast("This browser cannot talk to USB.", "error");
         return;
     }
 
@@ -771,21 +1293,31 @@ async function ConnectNode()
         await transport.Open(OnBytesFromNode);
         nodeTransport = transport;
 
-        SetStatus("connectionStatus", "Connected. Reading node status...", "ok");
-        Log("Node connected (" + (transport instanceof UsbTransport ? "WebUSB" : "Web Serial") + ")");
-        UpdateButtons();
+        HideResult();
+        SetConnectionState("ok", "Connected", "Reading board status...");
+        Log("Board connected (" + (transport instanceof UsbTransport ? "WebUSB" : "Web Serial") + ")");
+        RefreshScreen();
 
-        /* Opening the port can reboot the node. It comes back in provisioning
+        /* Opening the port can reboot the board. It comes back in provisioning
          * mode (USB power is present), so give it a moment before asking. */
         await new Promise((resolve) => setTimeout(resolve, 600));
         await ReadNodeStatus();
     }
     catch (error)
     {
-        SetStatus("connectionStatus", "Connect failed: " + error.message, "error");
-        Log("Connect failed: " + error.message, "error");
+        /* Closing the device picker without choosing is not worth a red banner. */
+        if (error.name === "NotFoundError")
+        {
+            Log("No board selected");
+        }
+        else
+        {
+            SetConnectionState("error", "Connect failed", error.message);
+            Log("Connect failed: " + error.message, "error");
+        }
+
         nodeTransport = null;
-        UpdateButtons();
+        RefreshScreen();
     }
 }
 
@@ -801,18 +1333,19 @@ async function DisconnectNode()
     lineWaiters.forEach((waiter) => clearTimeout(waiter.timer));
     lineWaiters = [];
 
-    element("nodeStatus").style.display = "none";
-    SetStatus("connectionStatus", "Disconnected.", "");
-    Log("Node disconnected");
-    UpdateButtons();
+    element("nodeStatus").style.display      = "none";
+    element("nodeStatusTitle").style.display = "none";
+    SetConnectionState("", "Not connected", "Plug the board into this phone with a USB OTG cable.");
+    Log("Board disconnected");
+    RefreshScreen();
 }
 
 function HandleLinkLost(error)
 {
     Log("Link lost: " + error.message, "error");
     nodeTransport = null;
-    SetStatus("connectionStatus", "Node disconnected (cable removed?).", "warning");
-    UpdateButtons();
+    SetConnectionState("warn", "Board disconnected", "The cable was removed or the board restarted.");
+    RefreshScreen();
 }
 
 async function ReadNodeStatus()
@@ -820,46 +1353,46 @@ async function ReadNodeStatus()
     try
     {
         await SendCommand("GET STATUS", "STATUS");
-        SetStatus("connectionStatus", "Connected.", "ok");
+        SetConnectionState("ok", "Connected", "Board is in setup mode and answering.");
     }
     catch (error)
     {
-        SetStatus("connectionStatus", "Connected, but the node did not answer. Is it in provisioning mode?", "warning");
+        SetConnectionState("warn", "Connected, no answer", "Is the board in setup mode? Replug the cable and try again.");
         Log(error.message, "error");
     }
 }
 
 async function ConfigureNode()
 {
-    const channel = parseInt(element("channelSelect").value, 10);
-    const surface = element("surfaceSelect").value;
-
-    element("configureButton").disabled = true;
-    SetStatus("configureStatus", "Configuring...", "");
+    isConfiguring = true;
+    HideResult();
+    RefreshScreen();
 
     try
     {
         /* Same commands the node firmware already understands. The zone byte
-         * travels as the node ID, so the node needs no firmware change. */
-        await SendCommand("SET ID " + selectedZoneByte,  "OK id=");
-        await SendCommand("SET MAC " + masterMacAddress, "OK mac=");
-        await SendCommand("SET CH " + channel,           "OK ch=");
-        await SendCommand("SET SURFACE " + surface,      "OK surf=");
-        await SendCommand("COMMIT",                      "OK committed");
+         * travels as the node ID, so the board needs no firmware change. */
+        await SendCommand("SET ID " + selectedZoneByte,       "OK id=");
+        await SendCommand("SET MAC " + masterMacAddress,      "OK mac=");
+        await SendCommand("SET CH " + selectedChannel,        "OK ch=");
+        await SendCommand("SET SURFACE " + selectedSurface,   "OK surf=");
+        await SendCommand("COMMIT",                           "OK committed");
 
-        /* Read it back so the screen shows what the node really saved. */
+        /* Read it back so the screen shows what the board really saved. */
         await SendCommand("GET STATUS", "STATUS");
 
-        SetStatus("configureStatus", "Done: " + ZONE_NAMES[selectedZoneByte] + ", channel " + channel + ", " + surface + ". Unplug the node.", "ok");
+        ShowResult("ok", "Board configured", SummaryText() + ". You can unplug the board now.");
+        ShowToast("Board configured", "ok");
         if (navigator.vibrate) { navigator.vibrate([80, 60, 80]); }
     }
     catch (error)
     {
-        SetStatus("configureStatus", "Failed: " + error.message, "error");
+        ShowResult("error", "Configuration failed", error.message);
         Log("Configure failed: " + error.message, "error");
     }
 
-    UpdateButtons();
+    isConfiguring = false;
+    RefreshScreen();
 }
 
 /* ==========================================================================
@@ -868,27 +1401,27 @@ async function ConfigureNode()
 
 function Setup()
 {
-    /* Channel list 1..13, last used channel remembered on this phone. */
-    const channelSelect = element("channelSelect");
+    /* Channel chips 1..13. */
+    const channelGrid = element("channelGrid");
 
     for (let channel = CHANNEL_MIN; channel <= CHANNEL_MAX; channel++)
     {
-        const option = document.createElement("option");
-        option.value = channel;
-        option.textContent = "Channel " + channel;
-        channelSelect.appendChild(option);
+        const chip = document.createElement("button");
+        chip.className       = "channel-chip";
+        chip.dataset.channel = channel;
+        chip.textContent     = channel;
+        chip.addEventListener("click", () => SetChannel(channel, "by hand"));
+        channelGrid.appendChild(chip);
     }
 
-    channelSelect.value = StorageGet(localStorage, "channel") || "1";
-    channelSelect.addEventListener("change", () =>
-    {
-        StorageSet(localStorage, "channel", channelSelect.value);
-        element("channelSource").textContent = "Channel " + channelSelect.value + " (set by hand)";
-    });
+    /* Last used channel and mount type on this phone. */
+    const savedChannel = parseInt(StorageGet(localStorage, "channel"), 10);
+    SetChannel((savedChannel >= CHANNEL_MIN && savedChannel <= CHANNEL_MAX) ? savedChannel : 1, "restored");
 
-    const surfaceSelect = element("surfaceSelect");
-    surfaceSelect.value = StorageGet(localStorage, "surface") || "board";
-    surfaceSelect.addEventListener("change", () => StorageSet(localStorage, "surface", surfaceSelect.value));
+    SetSurface(StorageGet(localStorage, "surface") === "net" ? "net" : "board");
+
+    document.querySelectorAll("#surfaceControl button").forEach((button) =>
+        button.addEventListener("click", () => SetSurface(button.dataset.surface)));
 
     /* MAC scanned earlier in this tab (e.g. before a reload). */
     const savedMac = StorageGet(sessionStorage, "masterMacAddress");
@@ -900,11 +1433,12 @@ function Setup()
     element("manualMacButton").addEventListener("click", () =>
     {
         const macAddress = ExtractMacAddress(element("manualMacInput").value);
+
         if (macAddress) { SetMasterMacAddress(macAddress, "typed"); }
-        else            { alert("Not a valid MAC address. Use AA:BB:CC:DD:EE:FF."); }
+        else            { ShowToast("Not a valid MAC address. Use AA:BB:CC:DD:EE:FF.", "error"); }
     });
 
-    document.querySelectorAll(".zone-grid button").forEach((button) =>
+    document.querySelectorAll(".zone-tile").forEach((button) =>
         button.addEventListener("click", () => SelectZone(button)));
 
     element("connectButton").addEventListener("click", ConnectNode);
@@ -914,10 +1448,13 @@ function Setup()
 
     if (navigator.usb)
     {
-        navigator.usb.addEventListener("disconnect", () => { if (nodeTransport instanceof UsbTransport) { HandleLinkLost(new Error("USB device removed")); } });
+        navigator.usb.addEventListener("disconnect", () =>
+        {
+            if (nodeTransport instanceof UsbTransport) { HandleLinkLost(new Error("USB device removed")); }
+        });
     }
 
-    UpdateButtons();
+    RefreshScreen();
 }
 
 Setup();
