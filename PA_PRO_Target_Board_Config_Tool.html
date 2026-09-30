@@ -185,9 +185,9 @@
   }
   input[type="text"]:focus { outline: 2px solid var(--green); outline-offset: 1px; border-color: transparent; }
 
-  /* ---------------- Zone tiles ---------------- */
-  .zone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .zone-tile {
+  /* ---------------- Node tiles ---------------- */
+  .node-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .node-tile {
     position: relative;
     padding: 16px 12px 14px;
     border-radius: var(--radius-medium);
@@ -196,11 +196,11 @@
     text-align: left;
     transition: border-color 0.2s, background 0.2s, transform 0.08s;
   }
-  .zone-tile:active { transform: scale(0.98); }
-  .zone-tile .zone-symbol { font-size: 26px; font-weight: 800; line-height: 1; color: var(--text); }
-  .zone-tile .zone-name { display: block; margin-top: 8px; font-weight: 700; font-size: 14.5px; }
-  .zone-tile .zone-byte { display: block; margin-top: 2px; font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); }
-  .zone-tile .tick {
+  .node-tile:active { transform: scale(0.98); }
+  .node-tile .node-symbol { font-size: 26px; font-weight: 800; line-height: 1; color: var(--text); }
+  .node-tile .node-name { display: block; margin-top: 8px; font-weight: 700; font-size: 14.5px; }
+  .node-tile .node-byte { display: block; margin-top: 2px; font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); }
+  .node-tile .tick {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -211,11 +211,11 @@
     display: grid;
     place-items: center;
   }
-  .zone-tile .tick svg { width: 13px; height: 13px; opacity: 0; }
-  .zone-tile.selected { border-color: var(--green); background: var(--green-soft); }
-  .zone-tile.selected .tick { background: var(--green); border-color: var(--green); }
-  .zone-tile.selected .tick svg { opacity: 1; }
-  .zone-tile.selected .zone-symbol { color: var(--green); }
+  .node-tile .tick svg { width: 13px; height: 13px; opacity: 0; }
+  .node-tile.selected { border-color: var(--green); background: var(--green-soft); }
+  .node-tile.selected .tick { background: var(--green); border-color: var(--green); }
+  .node-tile.selected .tick svg { opacity: 1; }
+  .node-tile.selected .node-symbol { color: var(--green); }
 
   /* ---------------- Channel chips & segmented control ---------------- */
   .field-label {
@@ -422,7 +422,7 @@
 
   <div class="stepper">
     <div class="step" id="stepperMaster"><div class="bar"></div>Master</div>
-    <div class="step" id="stepperZone"><div class="bar"></div>Zone</div>
+    <div class="step" id="stepperNode"><div class="bar"></div>Node</div>
     <div class="step" id="stepperLink"><div class="bar"></div>Link</div>
     <div class="step" id="stepperBoard"><div class="bar"></div>Board</div>
   </div>
@@ -453,37 +453,37 @@
     </details>
   </section>
 
-  <!-- ======================= STEP 2: ZONE ======================= -->
-  <section class="card" id="cardZone">
+  <!-- ======================= STEP 2: NODE NUMBER ======================= -->
+  <section class="card" id="cardNode">
     <div class="card-head">
-      <div class="card-title"><span class="step-badge">2</span>Board zone</div>
-      <span class="chip" id="zoneChip">Pick one</span>
+      <div class="card-title"><span class="step-badge">2</span>Node number</div>
+      <span class="chip" id="nodeChip">Pick one</span>
     </div>
 
-    <div class="zone-grid">
-      <button class="zone-tile" data-zone-byte="1">
+    <div class="node-grid">
+      <button class="node-tile" data-node-id="1">
         <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#021F48" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="zone-symbol">ON</span>
-        <span class="zone-name">On side</span>
-        <span class="zone-byte">byte 0x01</span>
+        <span class="node-symbol">1</span>
+        <span class="node-name">Node 1</span>
+        <span class="node-byte">ID 0x01</span>
       </button>
-      <button class="zone-tile" data-zone-byte="2">
+      <button class="node-tile" data-node-id="2">
         <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#021F48" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="zone-symbol">OFF</span>
-        <span class="zone-name">Off side</span>
-        <span class="zone-byte">byte 0x02</span>
+        <span class="node-symbol">2</span>
+        <span class="node-name">Node 2</span>
+        <span class="node-byte">ID 0x02</span>
       </button>
-      <button class="zone-tile" data-zone-byte="4">
+      <button class="node-tile" data-node-id="3">
         <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#021F48" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="zone-symbol">4</span>
-        <span class="zone-name">Four</span>
-        <span class="zone-byte">byte 0x04</span>
+        <span class="node-symbol">3</span>
+        <span class="node-name">Node 3</span>
+        <span class="node-byte">ID 0x03</span>
       </button>
-      <button class="zone-tile" data-zone-byte="6">
+      <button class="node-tile" data-node-id="4">
         <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#021F48" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="zone-symbol">6</span>
-        <span class="zone-name">Six</span>
-        <span class="zone-byte">byte 0x06</span>
+        <span class="node-symbol">4</span>
+        <span class="node-name">Node 4</span>
+        <span class="node-byte">ID 0x04</span>
       </button>
     </div>
   </section>
@@ -595,7 +595,7 @@ const REPLY_TIMEOUT_MILLISECONDS = 2000;    /* Longest wait for one "OK ..." / "
 const CHANNEL_MIN                = 1;       /* Lowest ESP-NOW channel.                           */
 const CHANNEL_MAX                = 13;      /* Highest ESP-NOW channel.                          */
 
-const ZONE_NAMES = { 1: "On side", 2: "Off side", 4: "Four", 6: "Six" };
+const NODE_NAMES = { 1: "Node 1", 2: "Node 2", 3: "Node 3", 4: "Node 4" };
 
 const ICON_OK    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>';
 const ICON_ERROR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v6M12 16.5v.5"/></svg>';
@@ -605,7 +605,7 @@ const ICON_ERROR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
  * ========================================================================== */
 
 let masterMacAddress  = null;       /* "AA:BB:CC:DD:EE:FF" once scanned or typed.  */
-let selectedZoneByte  = null;       /* 1, 2, 4 or 6 once a zone tile is pressed.   */
+let selectedNodeId    = null;       /* 1, 2, 3 or 4 once a node tile is pressed.   */
 let selectedChannel   = 1;          /* ESP-NOW channel, 1..13.                     */
 let selectedSurface   = "board";    /* "board" or "net".                           */
 let nodeTransport     = null;       /* The open USB / serial link, or null.        */
@@ -703,23 +703,23 @@ function ExtractChannel(text)
 
 function SummaryText()
 {
-    return ZONE_NAMES[selectedZoneByte] + " · CH " + selectedChannel + " · " + (selectedSurface === "board" ? "Board" : "Net");
+    return NODE_NAMES[selectedNodeId] + " · CH " + selectedChannel + " · " + (selectedSurface === "board" ? "Board" : "Net");
 }
 
 function RefreshScreen()
 {
     const isConnected = (nodeTransport !== null);
     const hasMaster   = (masterMacAddress !== null);
-    const hasZone     = (selectedZoneByte !== null);
+    const hasNode     = (selectedNodeId !== null);
 
     /* Stepper bars and card badges. */
     element("stepperMaster").classList.toggle("done", hasMaster);
-    element("stepperZone").classList.toggle("done", hasZone);
+    element("stepperNode").classList.toggle("done", hasNode);
     element("stepperLink").classList.toggle("done", hasMaster);
     element("stepperBoard").classList.toggle("done", isConnected);
 
     element("cardMaster").classList.toggle("done", hasMaster);
-    element("cardZone").classList.toggle("done", hasZone);
+    element("cardNode").classList.toggle("done", hasNode);
     element("cardLink").classList.toggle("done", hasMaster);
     element("cardBoard").classList.toggle("done", isConnected);
 
@@ -727,7 +727,7 @@ function RefreshScreen()
     element("connectButton").disabled    = isConnected;
     element("disconnectButton").disabled = !isConnected;
     element("readStatusButton").disabled = !isConnected || isConfiguring;
-    element("configureButton").disabled  = !(isConnected && hasMaster && hasZone) || isConfiguring;
+    element("configureButton").disabled  = !(isConnected && hasMaster && hasNode) || isConfiguring;
 
     /* Action bar: tell the user the next thing to do. */
     let summaryMain;
@@ -738,9 +738,9 @@ function RefreshScreen()
         summaryMain = "Scan the master QR code";
         summarySub  = "Step 1 of 4";
     }
-    else if (!hasZone)
+    else if (!hasNode)
     {
-        summaryMain = "Pick the board zone";
+        summaryMain = "Pick the node number";
         summarySub  = "Step 2 of 4";
     }
     else if (!isConnected)
@@ -959,18 +959,18 @@ function StopQrScan()
 }
 
 /* ==========================================================================
- *                            STEP 2: ZONE
+ *                         STEP 2: NODE NUMBER
  * ========================================================================== */
 
-function SelectZone(button)
+function SelectNode(button)
 {
-    document.querySelectorAll(".zone-tile").forEach((otherButton) => otherButton.classList.remove("selected"));
+    document.querySelectorAll(".node-tile").forEach((otherButton) => otherButton.classList.remove("selected"));
     button.classList.add("selected");
 
-    selectedZoneByte = parseInt(button.dataset.zoneByte, 10);
-    SetChip("zoneChip", ZONE_NAMES[selectedZoneByte], "ok");
+    selectedNodeId = parseInt(button.dataset.nodeId, 10);
+    SetChip("nodeChip", NODE_NAMES[selectedNodeId], "ok");
 
-    Log("Zone " + ZONE_NAMES[selectedZoneByte] + " (byte 0x0" + selectedZoneByte + ")");
+    Log(NODE_NAMES[selectedNodeId] + " (ID 0x0" + selectedNodeId + ")");
     HideResult();
     RefreshScreen();
 }
@@ -1231,11 +1231,11 @@ function ShowNodeStatus(statusLine)
         if (equalsIndex > 0) { fields[pair.slice(0, equalsIndex)] = pair.slice(equalsIndex + 1); }
     });
 
-    const zoneByte = parseInt(fields.id, 10);
-    const zoneText = ZONE_NAMES[zoneByte] ? ZONE_NAMES[zoneByte] : "Not set (" + (fields.id || "-") + ")";
+    const nodeId   = parseInt(fields.id, 10);
+    const nodeText = NODE_NAMES[nodeId] ? NODE_NAMES[nodeId] : "Not set (" + (fields.id || "-") + ")";
 
     const items = [
-        ["Zone",        zoneText,                              false],
+        ["Node",        nodeText,                              false],
         ["Channel",     fields.ch || "-",                      false],
         ["Master MAC",  fields.mac || "-",                     true ],
         ["Mount type",  fields.surf || "-",                    false],
@@ -1370,9 +1370,9 @@ async function ConfigureNode()
 
     try
     {
-        /* Same commands the node firmware already understands. The zone byte
-         * travels as the node ID, so the board needs no firmware change. */
-        await SendCommand("SET ID " + selectedZoneByte,       "OK id=");
+        /* Same commands the node firmware already understands. The node
+         * number (1..4) is saved as the node ID the master shows on its cards. */
+        await SendCommand("SET ID " + selectedNodeId,       "OK id=");
         await SendCommand("SET MAC " + masterMacAddress,      "OK mac=");
         await SendCommand("SET CH " + selectedChannel,        "OK ch=");
         await SendCommand("SET SURFACE " + selectedSurface,   "OK surf=");
@@ -1438,8 +1438,8 @@ function Setup()
         else            { ShowToast("Not a valid MAC address. Use AA:BB:CC:DD:EE:FF.", "error"); }
     });
 
-    document.querySelectorAll(".zone-tile").forEach((button) =>
-        button.addEventListener("click", () => SelectZone(button)));
+    document.querySelectorAll(".node-tile").forEach((button) =>
+        button.addEventListener("click", () => SelectNode(button)));
 
     element("connectButton").addEventListener("click", ConnectNode);
     element("disconnectButton").addEventListener("click", DisconnectNode);
